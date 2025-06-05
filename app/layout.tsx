@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { AppProvider } from '@/context/AppContext';
@@ -11,7 +11,11 @@ export const metadata: Metadata = {
   description: 'Discover curated adult content with intelligent shuffling. Safe mode and premium features available.',
   keywords: 'adult content, shuffle, premium, safe mode, curated',
   robots: 'noindex, nofollow', // Important for adult content
-  viewport: 'width=device-width, initial-scale=1',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
   themeColor: '#0f172a',
 };
 
