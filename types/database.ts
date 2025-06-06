@@ -1,3 +1,98 @@
+// Base types that are used by other interfaces
+export type SubscriptionTier = 'free' | 'premium' | 'premium_xxx';
+
+export type TagType = 'mood' | 'genre' | 'intensity' | 'category' | 'orientation';
+
+export type ReportReason = 
+  | 'inappropriate_content'
+  | 'copyright_violation'
+  | 'spam'
+  | 'harassment'
+  | 'underage_content'
+  | 'non_consensual'
+  | 'other';
+
+export interface UserPreferences {
+  favorite_tags: string[];
+  blocked_tags: string[];
+  preferred_duration: 'short' | 'medium' | 'long' | 'any';
+  content_intensity: 'soft' | 'medium' | 'intense' | 'any';
+  shuffle_algorithm: 'random' | 'smart' | 'trending';
+  auto_play: boolean;
+  show_content_warnings: boolean;
+}
+
+export interface CreatorLinks {
+  website?: string;
+  twitter?: string;
+  instagram?: string;
+  onlyfans?: string;
+  manyvids?: string;
+}
+
+export interface Scene {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail_url: string;
+  video_url: string;
+  creator_id: string;
+  duration: number; // in seconds
+  rating: number; // 1-5 stars
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+  view_count: number;
+  like_count: number;
+  dislike_count: number;
+  is_featured: boolean;
+  content_warnings: string[];
+}
+
+export interface Creator {
+  id: string;
+  name: string;
+  bio: string;
+  avatar_url?: string;
+  content_count: number;
+  links: CreatorLinks;
+  status: 'pending' | 'verified' | 'suspended';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Report {
+  id: string;
+  scene_id: string;
+  user_id: string;
+  reason: ReportReason;
+  description?: string;
+  status: 'pending' | 'reviewed' | 'resolved' | 'dismissed';
+  created_at: string;
+}
+
+export interface Subscription {
+  id: string;
+  user_id: string;
+  tier: SubscriptionTier;
+  payment_status: 'active' | 'past_due' | 'canceled' | 'unpaid';
+  stripe_subscription_id?: string;
+  current_period_start: string;
+  current_period_end: string;
+  renewal_date: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Tag {
+  id: string;
+  name: string;
+  type: TagType;
+  safe_mode: boolean;
+  description?: string;
+  color?: string;
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -64,98 +159,4 @@ export interface Database {
       };
     };
   };
-}
-
-export interface Scene {
-  id: string;
-  title: string;
-  description: string;
-  thumbnail_url: string;
-  video_url: string;
-  creator_id: string;
-  duration: number; // in seconds
-  rating: number; // 1-5 stars
-  tags: string[];
-  created_at: string;
-  updated_at: string;
-  view_count: number;
-  like_count: number;
-  dislike_count: number;
-  is_featured: boolean;
-  content_warnings: string[];
-}
-
-export interface Creator {
-  id: string;
-  name: string;
-  bio: string;
-  avatar_url?: string;
-  content_count: number;
-  links: CreatorLinks;
-  status: 'pending' | 'verified' | 'suspended';
-  created_at: string;
-  updated_at: string;
-}
-
-export interface CreatorLinks {
-  website?: string;
-  twitter?: string;
-  instagram?: string;
-  onlyfans?: string;
-  manyvids?: string;
-}
-
-export interface Report {
-  id: string;
-  scene_id: string;
-  user_id: string;
-  reason: ReportReason;
-  description?: string;
-  status: 'pending' | 'reviewed' | 'resolved' | 'dismissed';
-  created_at: string;
-}
-
-export type ReportReason = 
-  | 'inappropriate_content'
-  | 'copyright_violation'
-  | 'spam'
-  | 'harassment'
-  | 'underage_content'
-  | 'non_consensual'
-  | 'other';
-
-export interface Subscription {
-  id: string;
-  user_id: string;
-  tier: SubscriptionTier;
-  payment_status: 'active' | 'past_due' | 'canceled' | 'unpaid';
-  stripe_subscription_id?: string;
-  current_period_start: string;
-  current_period_end: string;
-  renewal_date: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export type SubscriptionTier = 'free' | 'premium' | 'premium_xxx';
-
-export interface Tag {
-  id: string;
-  name: string;
-  type: TagType;
-  safe_mode: boolean;
-  description?: string;
-  color?: string;
-}
-
-export type TagType = 'mood' | 'genre' | 'intensity' | 'category' | 'orientation';
-
-export interface UserPreferences {
-  favorite_tags: string[];
-  blocked_tags: string[];
-  preferred_duration: 'short' | 'medium' | 'long' | 'any';
-  content_intensity: 'soft' | 'medium' | 'intense' | 'any';
-  shuffle_algorithm: 'random' | 'smart' | 'trending';
-  auto_play: boolean;
-  show_content_warnings: boolean;
 } 

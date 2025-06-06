@@ -1,4 +1,11 @@
 import React from 'react';
+import type { 
+  UserPreferences, 
+  SubscriptionTier, 
+  Scene, 
+  ReportReason 
+} from './database';
+
 export * from './database';
 
 // App-specific types
