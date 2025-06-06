@@ -6,6 +6,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Search, Filter, Grid, List, Play, Heart, Bookmark } from 'lucide-react';
 
+// Force dynamic rendering to prevent build-time errors
+export const dynamic = 'force-dynamic';
+
 interface BrowseScene {
   id: string;
   title: string;

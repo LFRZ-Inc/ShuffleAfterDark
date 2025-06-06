@@ -6,6 +6,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Play, Heart, Bookmark, SkipForward, ThumbsUp, ThumbsDown, Share } from 'lucide-react';
 
+// Force dynamic rendering to prevent build-time errors
+export const dynamic = 'force-dynamic';
+
 interface ShuffledScene {
   id: string;
   title: string;

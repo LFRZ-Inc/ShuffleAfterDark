@@ -9,6 +9,9 @@ import TrendingTags from '@/components/TrendingTags';
 import CreatorSpotlight from '@/components/CreatorSpotlight';
 import Footer from '@/components/Footer';
 
+// Force dynamic rendering to prevent build-time errors
+export const dynamic = 'force-dynamic';
+
 export default function HomePage() {
   const { ageVerified, isLoading } = useApp();
 
