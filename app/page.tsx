@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 import AgeVerification from '@/components/AgeVerification';
 import Header from '@/components/Header';
@@ -42,12 +43,12 @@ export default function HomePage() {
             Toggle into ShuffleXXX mode for the full experience.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="btn-primary text-lg px-8 py-3">
+            <Link href="/shuffle" className="btn-primary text-lg px-8 py-3">
               Start Shuffling
-            </button>
-            <button className="btn-secondary text-lg px-8 py-3">
+            </Link>
+            <Link href="/browse" className="btn-secondary text-lg px-8 py-3">
               Browse Content
-            </button>
+            </Link>
           </div>
         </section>
 
