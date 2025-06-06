@@ -26,34 +26,34 @@ export const dynamic = 'force-dynamic';
 interface Creator {
   id: string;
   name: string;
-  bio: string;
-  website_url: string;
-  contact_email: string;
-  license_status: 'pending' | 'verified' | 'rejected';
-  is_verified: boolean;
+  bio: string | null;
+  website_url: string | null;
+  contact_email: string | null;
+  license_status: string | null;
+  is_verified: boolean | null;
 }
 
 interface Scene {
   id: string;
   title: string;
-  description: string;
-  thumbnail_sfw_url: string;
-  thumbnail_nsfw_url: string;
+  description: string | null;
+  thumbnail_sfw_url: string | null;
+  thumbnail_nsfw_url: string | null;
   video_url: string;
-  tags: string[];
+  tags: string[] | null;
   duration: number;
-  creator_id: string;
-  license_url: string;
-  license_verified: boolean;
-  content_warnings: string[];
-  age_rating: string;
-  is_nsfw: boolean;
-  is_premium: boolean;
-  is_active: boolean;
-  view_count: number;
-  like_count: number;
-  rating: number;
-  creator?: Creator;
+  creator_id: string | null;
+  license_url: string | null;
+  license_verified: boolean | null;
+  content_warnings: string[] | null;
+  age_rating: string | null;
+  is_nsfw: boolean | null;
+  is_premium: boolean | null;
+  is_active: boolean | null;
+  view_count: number | null;
+  like_count: number | null;
+  rating: number | null;
+  creator?: Creator | null;
 }
 
 export default function CreatorDashboardPage() {
@@ -206,14 +206,14 @@ export default function CreatorDashboardPage() {
       thumbnail_sfw_url: scene.thumbnail_sfw_url || '',
       thumbnail_nsfw_url: scene.thumbnail_nsfw_url || '',
       video_url: scene.video_url,
-      tags: scene.tags.join(', '),
+      tags: scene.tags?.join(', ') || '',
       duration: scene.duration.toString(),
       creator_id: scene.creator_id || '',
       license_url: scene.license_url || '',
-      license_verified: scene.license_verified,
-      content_warnings: scene.content_warnings.join(', '),
-      is_nsfw: scene.is_nsfw,
-      is_premium: scene.is_premium,
+      license_verified: scene.license_verified || false,
+      content_warnings: scene.content_warnings?.join(', ') || '',
+      is_nsfw: scene.is_nsfw || false,
+      is_premium: scene.is_premium || false,
     });
     setShowUploadForm(true);
   };
@@ -555,14 +555,14 @@ export default function CreatorDashboardPage() {
                         }`}>
                           {scene.is_premium ? 'Premium' : 'Free'}
                         </span>
-                        <span>{scene.view_count.toLocaleString()} views</span>
-                        <span>{scene.like_count} likes</span>
+                        <span>{scene.view_count?.toLocaleString() || 'No views'}</span>
+                        <span>{scene.like_count?.toLocaleString() || 'No likes'}</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => toggleActive(scene.id, scene.is_active)}
+                      onClick={() => toggleActive(scene.id, scene.is_active || false)}
                       className={`p-2 rounded transition-colors ${
                         scene.is_active 
                           ? 'bg-green-600 text-white hover:bg-green-700' 

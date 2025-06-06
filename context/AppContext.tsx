@@ -96,7 +96,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         throw error;
       }
 
-      setUserProfile(data);
+      setUserProfile(data as UserData);
       
       // Set age verification and XXX mode based on user profile
       if (data.age_verified) {
@@ -117,7 +117,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       const { data: authUser } = await supabase.auth.getUser();
       if (!authUser.user) return;
 
-      const newProfile: Partial<UserData> = {
+      const newProfile = {
         id: userId,
         email: authUser.user.email || '',
         username: authUser.user.email?.split('@')[0] || 'user',
@@ -144,7 +144,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         .single();
 
       if (error) throw error;
-      setUserProfile(data);
+      setUserProfile(data as UserData);
     } catch (error) {
       console.error('Error creating user profile:', error);
     }
@@ -266,7 +266,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         .single();
 
       if (error) throw error;
-      setUserProfile(data);
+      setUserProfile(data as UserData);
     } catch (error) {
       console.error('Error updating user profile:', error);
       throw error;
@@ -277,12 +277,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!user || !userProfile) return;
 
     try {
+      const currentPreferences = (userProfile.preferences as unknown as UserPreferences) || {
+        favoriteGenres: [],
+        blockedTags: [],
+        preferredDuration: 'any',
+        contentIntensity: 'any',
+        shuffleAlgorithm: 'smart',
+        autoPlay: false,
+        showContentWarnings: true,
+        privateHistory: false,
+      };
+
       const updatedPreferences = {
-        ...userProfile.preferences,
+        ...currentPreferences,
         ...preferences,
       };
 
-      await updateUserProfile({ preferences: updatedPreferences });
+      await updateUserProfile({ preferences: updatedPreferences as any });
     } catch (error) {
       console.error('Error updating user preferences:', error);
       throw error;

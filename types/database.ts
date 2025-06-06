@@ -535,46 +535,46 @@ export type TablesUpdate<
 export interface SceneData {
   id: string;
   title: string;
-  description: string;
-  thumbnail_sfw_url: string;
-  thumbnail_nsfw_url: string;
+  description: string | null;
+  thumbnail_sfw_url: string | null;
+  thumbnail_nsfw_url: string | null;
   video_url: string;
-  tags: string[];
+  tags: string[] | null;
   duration: number;
-  creator_id: string;
-  license_url: string;
-  license_verified: boolean;
-  content_warnings: string[];
-  age_rating: string;
-  is_nsfw: boolean;
-  is_premium: boolean;
-  is_active: boolean;
-  view_count: number;
-  like_count: number;
-  dislike_count: number;
-  rating: number;
-  published_at: string;
-  created_at: string;
-  updated_at: string;
-  creator?: CreatorData;
+  creator_id: string | null;
+  license_url: string | null;
+  license_verified: boolean | null;
+  content_warnings: string[] | null;
+  age_rating: string | null;
+  is_nsfw: boolean | null;
+  is_premium: boolean | null;
+  is_active: boolean | null;
+  view_count: number | null;
+  like_count: number | null;
+  dislike_count: number | null;
+  rating: number | null;
+  published_at: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  creator?: CreatorData | null;
 }
 
 // Creator data interface
 export interface CreatorData {
   id: string;
   name: string;
-  bio: string;
-  website_url: string;
-  contact_email: string;
-  avatar_url: string;
-  license_status: 'pending' | 'verified' | 'rejected';
-  is_verified: boolean;
-  content_count: number;
-  total_views: number;
-  total_earnings: number;
-  verification_documents: any[];
-  created_at: string;
-  updated_at: string;
+  bio: string | null;
+  website_url: string | null;
+  contact_email: string | null;
+  avatar_url: string | null;
+  license_status: string | null;
+  is_verified: boolean | null;
+  content_count: number | null;
+  total_views: number | null;
+  total_earnings: number | null;
+  verification_documents: Json | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 // User data interface
@@ -582,15 +582,15 @@ export interface UserData {
   id: string;
   email: string;
   username: string;
-  avatar_url: string;
-  role: 'user' | 'creator' | 'admin';
-  subscription_tier: 'free' | 'premium' | 'premium_xxx';
-  subscription_status: 'active' | 'cancelled' | 'expired' | 'inactive';
-  subscription_expires_at: string;
-  age_verified: boolean;
-  preferences: UserPreferences;
-  created_at: string;
-  updated_at: string;
+  avatar_url: string | null;
+  role: string | null;
+  subscription_tier: string | null;
+  subscription_status: string | null;
+  subscription_expires_at: string | null;
+  age_verified: boolean | null;
+  preferences: Json | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 // Subscription tiers
