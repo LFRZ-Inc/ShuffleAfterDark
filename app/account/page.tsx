@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useApp } from '@/context/AppContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -15,8 +15,11 @@ import {
   EyeOff,
   Edit,
   Save,
-  X
+  X,
+  Crown
 } from 'lucide-react';
+import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -51,31 +54,41 @@ interface UserProfile {
 }
 
 export default function AccountPage() {
-  const { ageVerified, user, isXXXEnabled, incognitoMode, toggleIncognitoMode } = useApp();
+  const { ageVerified, user, userProfile, isXXXEnabled, incognitoMode, toggleIncognitoMode } = useApp();
   const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, [user, userProfile]);
+
+  const checkAdminStatus = async () => {
+    if (!user || !userProfile) return;
+    setIsAdmin(userProfile.role === 'admin');
+  };
 
   // Mock user data - in real app this would come from API
   const mockProfile: UserProfile = {
     id: 'user-123',
-    email: 'user@example.com',
-    username: 'AdultContentLover',
-    joinDate: '2024-01-15',
+    email: user?.email || 'user@example.com',
+    username: userProfile?.username || 'AdultContentLover',
+    joinDate: userProfile?.created_at || '2024-01-15',
     subscription: {
-      tier: 'premium',
-      status: 'active',
-      renewalDate: '2024-02-15',
+      tier: (userProfile?.subscription_tier as any) || 'free',
+      status: (userProfile?.subscription_status as any) || 'inactive',
+      renewalDate: userProfile?.subscription_expires_at || undefined,
     },
     preferences: {
-      favoriteGenres: ['romantic', 'couples', 'artistic'],
-      blockedTags: ['extreme'],
-      preferredDuration: 'medium',
-      contentIntensity: 'medium',
-      shuffleAlgorithm: 'smart',
-      autoPlay: false,
-      showContentWarnings: true,
-      privateHistory: false,
+      favoriteGenres: userProfile?.preferences?.favoriteGenres || ['romantic', 'couples', 'artistic'],
+      blockedTags: userProfile?.preferences?.blockedTags || ['extreme'],
+      preferredDuration: userProfile?.preferences?.preferredDuration || 'medium',
+      contentIntensity: userProfile?.preferences?.contentIntensity || 'medium',
+      shuffleAlgorithm: userProfile?.preferences?.shuffleAlgorithm || 'smart',
+      autoPlay: userProfile?.preferences?.autoPlay || false,
+      showContentWarnings: userProfile?.preferences?.showContentWarnings || true,
+      privateHistory: userProfile?.preferences?.privateHistory || false,
     },
     stats: {
       totalViews: 1247,
@@ -141,6 +154,24 @@ export default function AccountPage() {
 
   const renderProfileTab = () => (
     <div className="space-y-6">
+      {/* Admin Dashboard Link */}
+      {isAdmin && (
+        <div className="card border-2 border-yellow-500/20 bg-gradient-to-r from-yellow-500/10 to-orange-500/10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <Crown className="w-6 h-6 text-yellow-500" />
+              <div>
+                <h3 className="text-lg font-semibold text-yellow-500">Admin Access</h3>
+                <p className="text-sm text-gray-400">Manage content and platform settings</p>
+              </div>
+            </div>
+            <Link href="/creator-dashboard" className="btn-primary bg-yellow-600 hover:bg-yellow-700">
+              Creator Dashboard
+            </Link>
+          </div>
+        </div>
+      )}
+
       <div className="card">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold">Profile Information</h3>
@@ -182,6 +213,12 @@ export default function AccountPage() {
                 <p className="text-sm text-gray-500">
                   Member since {new Date(profile.joinDate).toLocaleDateString()}
                 </p>
+                {isAdmin && (
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-600 text-yellow-100 mt-2">
+                    <Crown className="w-3 h-3 mr-1" />
+                    Administrator
+                  </span>
+                )}
               </div>
             )}
           </div>

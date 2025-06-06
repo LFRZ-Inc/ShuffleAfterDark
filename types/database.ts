@@ -13,13 +13,14 @@ export type ReportReason =
   | 'other';
 
 export interface UserPreferences {
-  favorite_tags: string[];
-  blocked_tags: string[];
-  preferred_duration: 'short' | 'medium' | 'long' | 'any';
-  content_intensity: 'soft' | 'medium' | 'intense' | 'any';
-  shuffle_algorithm: 'random' | 'smart' | 'trending';
-  auto_play: boolean;
-  show_content_warnings: boolean;
+  favoriteGenres: string[];
+  blockedTags: string[];
+  preferredDuration: 'short' | 'medium' | 'long' | 'any';
+  contentIntensity: 'soft' | 'medium' | 'intense' | 'any';
+  shuffleAlgorithm: 'random' | 'smart' | 'trending';
+  autoPlay: boolean;
+  showContentWarnings: boolean;
+  privateHistory: boolean;
 }
 
 export interface CreatorLinks {
@@ -93,70 +94,526 @@ export interface Tag {
   color?: string;
 }
 
-export interface Database {
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
+export type Database = {
   public: {
     Tables: {
+      content_reports: {
+        Row: {
+          admin_notes: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          report_type: string
+          reporter_id: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          scene_id: string | null
+          status: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          report_type: string
+          reporter_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          scene_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          report_type?: string
+          reporter_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          scene_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_reports_reporter_id_fkey"
+            columns: ["reporter_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_reports_scene_id_fkey"
+            columns: ["scene_id"]
+            isOneToOne: false
+            referencedRelation: "scenes_nsfw"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creators: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          contact_email: string | null
+          content_count: number | null
+          created_at: string | null
+          id: string
+          is_verified: boolean | null
+          license_status: string | null
+          name: string
+          total_earnings: number | null
+          total_views: number | null
+          updated_at: string | null
+          verification_documents: Json | null
+          website_url: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          contact_email?: string | null
+          content_count?: number | null
+          created_at?: string | null
+          id?: string
+          is_verified?: boolean | null
+          license_status?: string | null
+          name: string
+          total_earnings?: number | null
+          total_views?: number | null
+          updated_at?: string | null
+          verification_documents?: Json | null
+          website_url?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          contact_email?: string | null
+          content_count?: number | null
+          created_at?: string | null
+          id?: string
+          is_verified?: boolean | null
+          license_status?: string | null
+          name?: string
+          total_earnings?: number | null
+          total_views?: number | null
+          updated_at?: string | null
+          verification_documents?: Json | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      scenes_nsfw: {
+        Row: {
+          age_rating: string | null
+          content_warnings: string[] | null
+          created_at: string | null
+          creator_id: string | null
+          description: string | null
+          dislike_count: number | null
+          duration: number
+          id: string
+          is_active: boolean | null
+          is_nsfw: boolean | null
+          is_premium: boolean | null
+          license_url: string | null
+          license_verified: boolean | null
+          like_count: number | null
+          published_at: string | null
+          rating: number | null
+          tags: string[] | null
+          thumbnail_nsfw_url: string | null
+          thumbnail_sfw_url: string | null
+          title: string
+          updated_at: string | null
+          video_url: string
+          view_count: number | null
+        }
+        Insert: {
+          age_rating?: string | null
+          content_warnings?: string[] | null
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          dislike_count?: number | null
+          duration: number
+          id?: string
+          is_active?: boolean | null
+          is_nsfw?: boolean | null
+          is_premium?: boolean | null
+          license_url?: string | null
+          license_verified?: boolean | null
+          like_count?: number | null
+          published_at?: string | null
+          rating?: number | null
+          tags?: string[] | null
+          thumbnail_nsfw_url?: string | null
+          thumbnail_sfw_url?: string | null
+          title: string
+          updated_at?: string | null
+          video_url: string
+          view_count?: number | null
+        }
+        Update: {
+          age_rating?: string | null
+          content_warnings?: string[] | null
+          created_at?: string | null
+          creator_id?: string | null
+          description?: string | null
+          dislike_count?: number | null
+          duration?: number
+          id?: string
+          is_active?: boolean | null
+          is_nsfw?: boolean | null
+          is_premium?: boolean | null
+          license_url?: string | null
+          license_verified?: boolean | null
+          like_count?: number | null
+          published_at?: string | null
+          rating?: number | null
+          tags?: string[] | null
+          thumbnail_nsfw_url?: string | null
+          thumbnail_sfw_url?: string | null
+          title?: string
+          updated_at?: string | null
+          video_url?: string
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scenes_nsfw_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscription_history: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          currency: string | null
+          ended_at: string | null
+          id: string
+          payment_provider: string | null
+          payment_reference: string | null
+          started_at: string | null
+          subscription_status: string
+          subscription_tier: string
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          currency?: string | null
+          ended_at?: string | null
+          id?: string
+          payment_provider?: string | null
+          payment_reference?: string | null
+          started_at?: string | null
+          subscription_status: string
+          subscription_tier: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          currency?: string | null
+          ended_at?: string | null
+          id?: string
+          payment_provider?: string | null
+          payment_reference?: string | null
+          started_at?: string | null
+          subscription_status?: string
+          subscription_tier?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscription_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_interactions: {
+        Row: {
+          created_at: string | null
+          id: string
+          interaction_type: string
+          metadata: Json | null
+          scene_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          interaction_type: string
+          metadata?: Json | null
+          scene_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          interaction_type?: string
+          metadata?: Json | null
+          scene_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_interactions_scene_id_fkey"
+            columns: ["scene_id"]
+            isOneToOne: false
+            referencedRelation: "scenes_nsfw"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_interactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
-          id: string;
-          email: string;
-          created_at: string;
-          updated_at: string;
-          preferences: UserPreferences;
-          shuffle_history: string[];
-          subscription_status: SubscriptionTier;
-          age_verified: boolean;
-          incognito_mode: boolean;
-        };
+          age_verified: boolean | null
+          avatar_url: string | null
+          created_at: string | null
+          email: string
+          id: string
+          preferences: Json | null
+          role: string | null
+          subscription_expires_at: string | null
+          subscription_status: string | null
+          subscription_tier: string | null
+          updated_at: string | null
+          username: string
+        }
         Insert: {
-          id?: string;
-          email: string;
-          preferences?: UserPreferences;
-          shuffle_history?: string[];
-          subscription_status?: SubscriptionTier;
-          age_verified?: boolean;
-          incognito_mode?: boolean;
-        };
+          age_verified?: boolean | null
+          avatar_url?: string | null
+          created_at?: string | null
+          email: string
+          id?: string
+          preferences?: Json | null
+          role?: string | null
+          subscription_expires_at?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          username: string
+        }
         Update: {
-          id?: string;
-          email?: string;
-          preferences?: UserPreferences;
-          shuffle_history?: string[];
-          subscription_status?: SubscriptionTier;
-          age_verified?: boolean;
-          incognito_mode?: boolean;
-        };
-      };
-      scenes_sfw: {
-        Row: Scene;
-        Insert: Omit<Scene, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<Scene, 'id' | 'created_at'>>;
-      };
-      scenes_nsfw: {
-        Row: Scene;
-        Insert: Omit<Scene, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<Scene, 'id' | 'created_at'>>;
-      };
-      creators: {
-        Row: Creator;
-        Insert: Omit<Creator, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<Creator, 'id' | 'created_at'>>;
-      };
-      reports: {
-        Row: Report;
-        Insert: Omit<Report, 'id' | 'created_at'>;
-        Update: Partial<Omit<Report, 'id' | 'created_at'>>;
-      };
-      subscriptions: {
-        Row: Subscription;
-        Insert: Omit<Subscription, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<Subscription, 'id' | 'created_at'>>;
-      };
-      tags: {
-        Row: Tag;
-        Insert: Omit<Tag, 'id'>;
-        Update: Partial<Omit<Tag, 'id'>>;
-      };
-    };
-  };
-} 
+          age_verified?: boolean | null
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string
+          id?: string
+          preferences?: Json | null
+          role?: string | null
+          subscription_expires_at?: string | null
+          subscription_status?: string | null
+          subscription_tier?: string | null
+          updated_at?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
+}
+
+type DefaultSchema = Database[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof Database },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof Database },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
+
+// Scene data interface
+export interface SceneData {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail_sfw_url: string;
+  thumbnail_nsfw_url: string;
+  video_url: string;
+  tags: string[];
+  duration: number;
+  creator_id: string;
+  license_url: string;
+  license_verified: boolean;
+  content_warnings: string[];
+  age_rating: string;
+  is_nsfw: boolean;
+  is_premium: boolean;
+  is_active: boolean;
+  view_count: number;
+  like_count: number;
+  dislike_count: number;
+  rating: number;
+  published_at: string;
+  created_at: string;
+  updated_at: string;
+  creator?: CreatorData;
+}
+
+// Creator data interface
+export interface CreatorData {
+  id: string;
+  name: string;
+  bio: string;
+  website_url: string;
+  contact_email: string;
+  avatar_url: string;
+  license_status: 'pending' | 'verified' | 'rejected';
+  is_verified: boolean;
+  content_count: number;
+  total_views: number;
+  total_earnings: number;
+  verification_documents: any[];
+  created_at: string;
+  updated_at: string;
+}
+
+// User data interface
+export interface UserData {
+  id: string;
+  email: string;
+  username: string;
+  avatar_url: string;
+  role: 'user' | 'creator' | 'admin';
+  subscription_tier: 'free' | 'premium' | 'premium_xxx';
+  subscription_status: 'active' | 'cancelled' | 'expired' | 'inactive';
+  subscription_expires_at: string;
+  age_verified: boolean;
+  preferences: UserPreferences;
+  created_at: string;
+  updated_at: string;
+}
+
+// Subscription tiers
+export const SUBSCRIPTION_TIERS = {
+  FREE: 'free',
+  PREMIUM: 'premium',
+  PREMIUM_XXX: 'premium_xxx',
+} as const;
+
+// User roles
+export const USER_ROLES = {
+  USER: 'user',
+  CREATOR: 'creator',
+  ADMIN: 'admin',
+} as const;
+
+// Content report types
+export const REPORT_TYPES = {
+  INAPPROPRIATE_CONTENT: 'inappropriate_content',
+  COPYRIGHT_VIOLATION: 'copyright_violation',
+  SPAM: 'spam',
+  HARASSMENT: 'harassment',
+  UNDERAGE_CONTENT: 'underage_content',
+  NON_CONSENSUAL: 'non_consensual',
+  OTHER: 'other',
+} as const; 
