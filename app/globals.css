@@ -57,6 +57,58 @@ a {
   background: #64748b;
 }
 
+/* SafeMode Image Blurring */
+.scene-image {
+  transition: filter 0.5s ease, transform 0.3s ease;
+}
+
+.scene-image.safe-mode {
+  filter: blur(8px);
+}
+
+.scene-image.full-mode {
+  filter: none;
+}
+
+.scene-image:hover {
+  transform: scale(1.02);
+}
+
+/* Scene thumbnail blurring for browse/shuffle */
+.scene-thumbnail {
+  transition: filter 0.5s ease, transform 0.3s ease;
+}
+
+.scene-thumbnail.safe-mode {
+  filter: blur(6px);
+}
+
+.scene-thumbnail.full-mode {
+  filter: none;
+}
+
+.scene-thumbnail:hover {
+  transform: scale(1.05);
+}
+
+/* Safe mode overlay for extra protection */
+.safe-mode-overlay {
+  backdrop-filter: blur(2px);
+}
+
+.safe-mode-overlay::after {
+  content: "🔒";
+}
+
+/* License attribution styling */
+.license-attribution {
+  @apply text-sm text-gray-400 mt-4 p-3 bg-dark-700/50 rounded-lg border-l-4 border-blue-500;
+}
+
+.license-attribution a {
+  @apply text-blue-400 hover:text-blue-300 underline;
+}
+
 /* Custom components */
 @layer components {
   .btn-primary {

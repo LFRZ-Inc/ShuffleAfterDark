@@ -129,16 +129,17 @@ export default function ScenePage() {
   };
 
   const handlePlay = () => {
-    if (!scene) return;
+    setIsPlaying(true);
     
-    if (scene.video_url.startsWith('http')) {
-      // External link - open in new tab
+    // If it's an external link, open in new tab
+    if (scene?.video_url.startsWith('http')) {
       window.open(scene.video_url, '_blank');
-    } else {
-      // Internal video - show player
-      setIsPlaying(true);
     }
   };
+
+  // Check if the video_url is actually an image
+  const isImage = scene?.video_url.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+  const isExternalVideo = scene?.video_url.startsWith('http');
 
   const handleLike = async () => {
     if (!scene) return;
@@ -258,28 +259,64 @@ export default function ScenePage() {
     );
   }
 
-  const isExternalVideo = scene.video_url.startsWith('http');
-
   return (
     <div className="min-h-screen">
       <Header />
       
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          {/* Video Player */}
+          {/* Media Player/Viewer */}
           <div className="mb-8">
             <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
-              {!isPlaying ? (
+              {isImage ? (
+                /* Image Display */
+                <div className="relative w-full h-full">
+                  <img 
+                    src={scene.video_url} 
+                    alt={scene.title}
+                    className={`scene-image w-full h-full object-cover ${safeMode && scene.is_nsfw ? 'safe-mode' : 'full-mode'}`}
+                  />
+                  
+                  {/* Safe mode overlay for NSFW images */}
+                  {safeMode && scene.is_nsfw && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <div className="bg-black/80 text-white px-4 py-2 rounded-lg text-center">
+                        <div className="text-2xl mb-2">🔒</div>
+                        <div className="text-sm">Safe Mode Active</div>
+                        <div className="text-xs text-gray-300 mt-1">Enable Full Experience to view</div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Image indicators */}
+                  <div className="absolute bottom-4 left-4 bg-black/80 text-white text-sm px-3 py-1 rounded flex items-center space-x-1">
+                    <span>📷</span>
+                    <span>Image</span>
+                  </div>
+                </div>
+              ) : !isPlaying ? (
+                /* Video Thumbnail with Play Button */
                 <div className="relative w-full h-full">
                   {getThumbnail() ? (
                     <img 
                       src={getThumbnail()!} 
                       alt={scene.title}
-                      className="w-full h-full object-cover"
+                      className={`scene-image w-full h-full object-cover ${safeMode && scene.is_nsfw ? 'safe-mode' : 'full-mode'}`}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-primary-600/20 to-primary-800/20 flex items-center justify-center">
                       <Play className="w-16 h-16 text-white/60" />
+                    </div>
+                  )}
+                  
+                  {/* Safe mode overlay for NSFW video thumbnails */}
+                  {safeMode && scene.is_nsfw && (
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <div className="bg-black/80 text-white px-4 py-2 rounded-lg text-center">
+                        <div className="text-2xl mb-2">🔒</div>
+                        <div className="text-sm">Safe Mode Active</div>
+                        <div className="text-xs text-gray-300 mt-1">Enable Full Experience to view</div>
+                      </div>
                     </div>
                   )}
                   
@@ -292,55 +329,58 @@ export default function ScenePage() {
                       {isExternalVideo && <ExternalLink className="w-6 h-6 text-white" />}
                     </button>
                   </div>
-                  
-                  {/* Content Warnings */}
-                  {scene.content_warnings && scene.content_warnings.length > 0 && (
-                    <div className="absolute top-4 left-4 space-y-2">
-                      {scene.content_warnings.map((warning) => (
-                        <div key={warning} className="bg-red-600 text-white text-sm px-3 py-1 rounded">
-                          {warning}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Duration */}
-                  <div className="absolute bottom-4 right-4 bg-black/80 text-white px-3 py-1 rounded">
-                    {formatDuration(scene.duration)}
-                  </div>
-
-                  {/* Age Rating */}
-                  {scene.age_rating && (
-                    <div className="absolute top-4 right-4 bg-black/80 text-white text-sm px-3 py-1 rounded">
-                      {scene.age_rating}
-                    </div>
-                  )}
-
-                  {/* NSFW indicator */}
-                  {scene.is_nsfw && !safeMode && (
-                    <div className="absolute top-16 right-4 bg-red-600 text-white text-sm px-3 py-1 rounded">
-                      XXX
-                    </div>
-                  )}
-
-                  {/* Premium indicator */}
-                  {scene.is_premium && (
-                    <div className="absolute top-4 left-4 bg-yellow-600 text-white text-sm px-3 py-1 rounded">
-                      Premium
-                    </div>
-                  )}
-
-                  {/* External link indicator */}
-                  {isExternalVideo && (
-                    <div className="absolute bottom-4 left-4 bg-blue-600 text-white text-sm px-3 py-1 rounded flex items-center space-x-1">
-                      <ExternalLink className="w-3 h-3" />
-                      <span>External Link</span>
-                    </div>
-                  )}
                 </div>
               ) : (
+                /* Video Player */
                 <div className="w-full h-full bg-black flex items-center justify-center">
                   <p className="text-white">Video Player Placeholder</p>
+                </div>
+              )}
+              
+              {/* Content Warnings */}
+              {scene.content_warnings && scene.content_warnings.length > 0 && (
+                <div className="absolute top-4 left-4 space-y-2">
+                  {scene.content_warnings.map((warning) => (
+                    <div key={warning} className="bg-red-600 text-white text-sm px-3 py-1 rounded">
+                      {warning}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Duration (only for videos) */}
+              {!isImage && (
+                <div className="absolute bottom-4 right-4 bg-black/80 text-white px-3 py-1 rounded">
+                  {formatDuration(scene.duration)}
+                </div>
+              )}
+
+              {/* Age Rating */}
+              {scene.age_rating && (
+                <div className="absolute top-4 right-4 bg-black/80 text-white text-sm px-3 py-1 rounded">
+                  {scene.age_rating}
+                </div>
+              )}
+
+              {/* NSFW indicator */}
+              {scene.is_nsfw && !safeMode && (
+                <div className="absolute top-16 right-4 bg-red-600 text-white text-sm px-3 py-1 rounded">
+                  XXX
+                </div>
+              )}
+
+              {/* Premium indicator */}
+              {scene.is_premium && (
+                <div className="absolute top-4 left-4 bg-yellow-600 text-white text-sm px-3 py-1 rounded">
+                  Premium
+                </div>
+              )}
+
+              {/* External link indicator */}
+              {isExternalVideo && (
+                <div className="absolute bottom-4 left-4 bg-blue-600 text-white text-sm px-3 py-1 rounded flex items-center space-x-1">
+                  <ExternalLink className="w-3 h-3" />
+                  <span>External Link</span>
                 </div>
               )}
             </div>
@@ -443,24 +483,50 @@ export default function ScenePage() {
               {/* License Information */}
               {scene.license_url && (
                 <div className="card">
-                  <h3 className="font-semibold mb-3">License Information</h3>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-400">
-                        This content is licensed and verified for distribution.
+                  <h3 className="font-semibold mb-3">License & Attribution</h3>
+                  <div className="license-attribution">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <p className="text-sm text-gray-300 mb-2">
+                          <strong>"{scene.title}"</strong> by{' '}
+                          <strong>{scene.creator?.name || 'Unknown Creator'}</strong>
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          This content is licensed and verified for distribution.
+                          {scene.license_verified && (
+                            <span className="text-green-400 ml-2">✓ License Verified</span>
+                          )}
+                        </p>
+                      </div>
+                      <a
+                        href={scene.license_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn-secondary text-sm ml-4"
+                      >
+                        View License
+                      </a>
+                    </div>
+                    
+                    {/* License details */}
+                    <div className="text-xs text-gray-500 border-t border-dark-600 pt-3">
+                      <p>
+                        Original source:{' '}
+                        <a 
+                          href={scene.license_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-blue-400 hover:text-blue-300 underline"
+                        >
+                          {scene.license_url.includes('wikimedia') ? 'Wikimedia Commons' : 'View Source'}
+                        </a>
                       </p>
-                      {scene.license_verified && (
-                        <p className="text-sm text-green-400 mt-1">✓ License Verified</p>
+                      {scene.published_at && (
+                        <p className="mt-1">
+                          Published: {new Date(scene.published_at).toLocaleDateString()}
+                        </p>
                       )}
                     </div>
-                    <a
-                      href={scene.license_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-secondary text-sm"
-                    >
-                      View License
-                    </a>
                   </div>
                 </div>
               )}

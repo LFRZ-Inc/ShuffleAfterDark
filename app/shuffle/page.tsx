@@ -241,11 +241,20 @@ export default function ShufflePage() {
                     <img 
                       src={getThumbnail(currentScene)!} 
                       alt={currentScene.title}
-                      className="w-full h-full object-cover"
+                      className={`scene-thumbnail ${safeMode && currentScene.is_nsfw ? 'safe-mode' : 'full-mode'}`}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-primary-600/20 to-primary-800/20 flex items-center justify-center">
                       <Play className="w-16 h-16 text-white/60" />
+                    </div>
+                  )}
+                  
+                  {/* Safe mode overlay for NSFW content */}
+                  {safeMode && currentScene.is_nsfw && (
+                    <div className="absolute inset-0 bg-black/20 flex items-center justify-center rounded-lg">
+                      <div className="bg-black/80 text-white text-xs px-3 py-1 rounded-full">
+                        🔒 Safe Mode
+                      </div>
                     </div>
                   )}
                   
