@@ -18,6 +18,7 @@ interface AppContextType {
   // Content filtering
   isXXXEnabled: boolean;
   toggleXXXMode: () => void;
+  safeMode: boolean;
   
   // Privacy
   incognitoMode: boolean;
@@ -315,6 +316,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     signOut,
     updateUserProfile,
     updateUserPreferences,
+    safeMode: !isXXXEnabled,
   };
 
   return (

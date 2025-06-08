@@ -17,8 +17,11 @@ import {
   Eye,
   ThumbsUp,
   ThumbsDown,
-  User
+  User,
+  ExternalLink
 } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import Link from 'next/link';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -26,97 +29,190 @@ export const dynamic = 'force-dynamic';
 interface SceneData {
   id: string;
   title: string;
-  description: string;
-  videoUrl: string;
-  thumbnailUrl: string;
-  duration: string;
-  rating: number;
-  viewCount: number;
-  likeCount: number;
-  dislikeCount: number;
-  tags: string[];
-  creator: {
+  description: string | null;
+  video_url: string;
+  thumbnail_sfw_url: string | null;
+  thumbnail_nsfw_url: string | null;
+  duration: number;
+  tags: string[] | null;
+  creator_id: string | null;
+  license_url: string | null;
+  license_verified: boolean | null;
+  content_warnings: string[] | null;
+  age_rating: string | null;
+  is_nsfw: boolean | null;
+  is_premium: boolean | null;
+  is_active: boolean | null;
+  view_count: number | null;
+  like_count: number | null;
+  dislike_count: number | null;
+  rating: number | null;
+  published_at: string | null;
+  created_at: string | null;
+  creator?: {
     id: string;
     name: string;
-    avatar: string;
-    verified: boolean;
-    contentCount: number;
-  };
-  ageRating: string;
-  isNSFW: boolean;
-  isPremium: boolean;
-  createdAt: string;
-  contentWarnings: string[];
+    bio: string | null;
+    is_verified: boolean | null;
+    content_count: number | null;
+  } | null;
 }
 
 export default function ScenePage() {
   const params = useParams();
-  const { isXXXEnabled, ageVerified, user } = useApp();
+  const { isXXXEnabled, safeMode, ageVerified, user } = useApp();
   const [scene, setScene] = useState<SceneData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [reportDetails, setReportDetails] = useState('');
 
-  // Mock scene data - in real app this would come from API
-  const mockScene: SceneData = {
-    id: params.id as string,
-    title: 'Romantic Sunset Intimacy',
-    description: 'A beautiful and intimate scene featuring real couples sharing tender moments during golden hour. This artistic piece focuses on emotional connection and natural beauty.',
-    videoUrl: '/placeholder-video.mp4',
-    thumbnailUrl: '/placeholder-romantic.jpg',
-    duration: '12:34',
-    rating: 4.8,
-    viewCount: 15420,
-    likeCount: 1234,
-    dislikeCount: 45,
-    tags: ['romantic', 'couples', 'intimate', 'artistic', 'golden-hour'],
-    creator: {
-      id: 'creator-1',
-      name: 'Artistic Expressions',
-      avatar: '/placeholder-avatar.jpg',
-      verified: true,
-      contentCount: 127,
-    },
-    ageRating: '18+',
-    isNSFW: false,
-    isPremium: false,
-    createdAt: '2024-01-15',
-    contentWarnings: ['Adult Content', 'Nudity'],
+  const loadScene = async () => {
+    try {
+      const sceneId = Array.isArray(params.id) ? params.id[0] : params.id;
+      
+      const { data, error } = await supabase
+        .from('scenes_nsfw')
+        .select(`
+          *,
+          creator:creators(
+            id,
+            name,
+            bio,
+            is_verified,
+            content_count
+          )
+        `)
+        .eq('id', sceneId)
+        .eq('is_active', true)
+        .single();
+
+      if (error) throw error;
+      
+      // Check if content should be blocked in safe mode
+      if (safeMode && data.is_nsfw) {
+        setScene(null);
+      } else {
+        setScene(data);
+        
+        // Record view
+        await supabase
+          .from('user_interactions')
+          .insert([{
+            scene_id: data.id,
+            interaction_type: 'view'
+          }]);
+      }
+    } catch (error) {
+      console.error('Error loading scene:', error);
+      setScene(null);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setScene(mockScene);
-      setIsLoading(false);
-    }, 1000);
-  }, [params.id]);
+  const formatDuration = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  const getThumbnail = () => {
+    if (!scene) return null;
+    if (safeMode || !scene.is_nsfw) {
+      return scene.thumbnail_sfw_url;
+    }
+    return scene.thumbnail_nsfw_url || scene.thumbnail_sfw_url;
+  };
 
   const handlePlay = () => {
-    setIsPlaying(true);
-    // In real app, this would start video playback
+    if (!scene) return;
+    
+    if (scene.video_url.startsWith('http')) {
+      // External link - open in new tab
+      window.open(scene.video_url, '_blank');
+    } else {
+      // Internal video - show player
+      setIsPlaying(true);
+    }
   };
 
-  const handleLike = () => {
-    setIsLiked(!isLiked);
-    // In real app, this would update user preferences
+  const handleLike = async () => {
+    if (!scene) return;
+    
+    try {
+      await supabase
+        .from('user_interactions')
+        .insert([{
+          scene_id: scene.id,
+          interaction_type: 'like'
+        }]);
+      
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.error('Error liking scene:', error);
+    }
   };
 
-  const handleSave = () => {
-    setIsSaved(!isSaved);
-    // In real app, this would save to user's favorites
+  const handleSave = async () => {
+    if (!scene) return;
+    
+    try {
+      await supabase
+        .from('user_interactions')
+        .insert([{
+          scene_id: scene.id,
+          interaction_type: 'favorite'
+        }]);
+      
+      setIsSaved(!isSaved);
+    } catch (error) {
+      console.error('Error saving scene:', error);
+    }
   };
 
   const handleReport = () => {
     setShowReportModal(true);
   };
 
+  const submitReport = async () => {
+    if (!scene || !reportReason) return;
+    
+    try {
+      await supabase
+        .from('content_reports')
+        .insert([{
+          scene_id: scene.id,
+          report_type: reportReason,
+          description: reportDetails,
+          status: 'pending'
+        }]);
+      
+      setShowReportModal(false);
+      setReportReason('');
+      setReportDetails('');
+      
+      // Show success message (you could add a toast notification here)
+      alert('Report submitted successfully. Thank you for helping keep our platform safe.');
+    } catch (error) {
+      console.error('Error submitting report:', error);
+      alert('Error submitting report. Please try again.');
+    }
+  };
+
   const handleDownload = () => {
     // In real app, this would initiate download for premium users
     console.log('Download initiated');
   };
+
+  useEffect(() => {
+    if (ageVerified && params.id) {
+      loadScene();
+    }
+  }, [params.id, ageVerified, safeMode]);
 
   if (!ageVerified) {
     return (
@@ -141,23 +237,28 @@ export default function ScenePage() {
     );
   }
 
-  if (!scene || (scene.isNSFW && !isXXXEnabled)) {
+  if (!scene) {
     return (
       <div className="min-h-screen">
         <Header />
         <div className="container mx-auto px-4 py-8 text-center">
           <h1 className="text-2xl font-bold mb-4">Content Not Available</h1>
-          <p className="text-gray-400">
-            {scene?.isNSFW && !isXXXEnabled 
-              ? 'This content requires XXX mode to be enabled.'
+          <p className="text-gray-400 mb-4">
+            {safeMode 
+              ? 'This content is not available in Safe Mode. Try enabling ShuffleXXX mode.'
               : 'The requested content could not be found.'
             }
           </p>
+          <Link href="/browse" className="btn-primary">
+            Browse Other Content
+          </Link>
         </div>
         <Footer />
       </div>
     );
   }
+
+  const isExternalVideo = scene.video_url.startsWith('http');
 
   return (
     <div className="min-h-screen">
@@ -170,19 +271,32 @@ export default function ScenePage() {
             <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
               {!isPlaying ? (
                 <div className="relative w-full h-full">
-                  <div className="w-full h-full bg-gradient-to-br from-primary-600/20 to-primary-800/20 flex items-center justify-center">
+                  {getThumbnail() ? (
+                    <img 
+                      src={getThumbnail()!} 
+                      alt={scene.title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary-600/20 to-primary-800/20 flex items-center justify-center">
+                      <Play className="w-16 h-16 text-white/60" />
+                    </div>
+                  )}
+                  
+                  <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                     <button
                       onClick={handlePlay}
-                      className="bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-6 transition-all duration-200"
+                      className="bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full p-6 transition-all duration-200 flex items-center space-x-3"
                     >
                       <Play className="w-16 h-16 text-white" />
+                      {isExternalVideo && <ExternalLink className="w-6 h-6 text-white" />}
                     </button>
                   </div>
                   
                   {/* Content Warnings */}
-                  {scene.contentWarnings.length > 0 && (
+                  {scene.content_warnings && scene.content_warnings.length > 0 && (
                     <div className="absolute top-4 left-4 space-y-2">
-                      {scene.contentWarnings.map((warning) => (
+                      {scene.content_warnings.map((warning) => (
                         <div key={warning} className="bg-red-600 text-white text-sm px-3 py-1 rounded">
                           {warning}
                         </div>
@@ -192,13 +306,37 @@ export default function ScenePage() {
 
                   {/* Duration */}
                   <div className="absolute bottom-4 right-4 bg-black/80 text-white px-3 py-1 rounded">
-                    {scene.duration}
+                    {formatDuration(scene.duration)}
                   </div>
 
                   {/* Age Rating */}
-                  <div className="absolute top-4 right-4 bg-black/80 text-white text-sm px-3 py-1 rounded">
-                    {scene.ageRating}
-                  </div>
+                  {scene.age_rating && (
+                    <div className="absolute top-4 right-4 bg-black/80 text-white text-sm px-3 py-1 rounded">
+                      {scene.age_rating}
+                    </div>
+                  )}
+
+                  {/* NSFW indicator */}
+                  {scene.is_nsfw && !safeMode && (
+                    <div className="absolute top-16 right-4 bg-red-600 text-white text-sm px-3 py-1 rounded">
+                      XXX
+                    </div>
+                  )}
+
+                  {/* Premium indicator */}
+                  {scene.is_premium && (
+                    <div className="absolute top-4 left-4 bg-yellow-600 text-white text-sm px-3 py-1 rounded">
+                      Premium
+                    </div>
+                  )}
+
+                  {/* External link indicator */}
+                  {isExternalVideo && (
+                    <div className="absolute bottom-4 left-4 bg-blue-600 text-white text-sm px-3 py-1 rounded flex items-center space-x-1">
+                      <ExternalLink className="w-3 h-3" />
+                      <span>External Link</span>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="w-full h-full bg-black flex items-center justify-center">
@@ -218,16 +356,18 @@ export default function ScenePage() {
                   <div className="flex items-center space-x-4 text-sm text-gray-400">
                     <div className="flex items-center space-x-1">
                       <Eye className="w-4 h-4" />
-                      <span>{scene.viewCount.toLocaleString()} views</span>
+                      <span>{scene.view_count ? scene.view_count.toLocaleString() : 0} views</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Clock className="w-4 h-4" />
-                      <span>{scene.duration}</span>
+                      <span>{formatDuration(scene.duration)}</span>
                     </div>
-                    <div className="flex items-center space-x-1">
-                      <Star className="w-4 h-4 text-yellow-400" />
-                      <span>{scene.rating}</span>
-                    </div>
+                    {scene.rating && (
+                      <div className="flex items-center space-x-1">
+                        <Star className="w-4 h-4 text-yellow-400" />
+                        <span>{scene.rating.toFixed(1)}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -239,7 +379,7 @@ export default function ScenePage() {
                     }`}
                   >
                     <ThumbsUp className="w-4 h-4" />
-                    <span>{scene.likeCount}</span>
+                    <span>{scene.like_count || 0}</span>
                   </button>
 
                   <button
@@ -255,7 +395,7 @@ export default function ScenePage() {
                     <Share className="w-4 h-4" />
                   </button>
 
-                  {user && (
+                  {user && scene.is_premium && (
                     <button
                       onClick={handleDownload}
                       className="p-2 bg-dark-700 text-gray-300 hover:bg-dark-600 rounded-lg transition-colors"
@@ -277,73 +417,122 @@ export default function ScenePage() {
               {/* Description */}
               <div className="card">
                 <h3 className="font-semibold mb-3">Description</h3>
-                <p className="text-gray-300 leading-relaxed">{scene.description}</p>
+                <p className="text-gray-300 leading-relaxed">
+                  {scene.description || 'No description available.'}
+                </p>
               </div>
 
               {/* Tags */}
-              <div className="card">
-                <h3 className="font-semibold mb-3">Tags</h3>
-                <div className="flex flex-wrap gap-2">
-                  {scene.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="bg-dark-700 text-gray-300 px-3 py-1 rounded-full text-sm hover:bg-primary-600 hover:text-white transition-colors cursor-pointer"
-                    >
-                      {tag}
-                    </span>
-                  ))}
+              {scene.tags && scene.tags.length > 0 && (
+                <div className="card">
+                  <h3 className="font-semibold mb-3">Tags</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {scene.tags.map((tag) => (
+                      <Link
+                        key={tag}
+                        href={`/browse?tag=${encodeURIComponent(tag)}`}
+                        className="bg-dark-700 text-gray-300 px-3 py-1 rounded-full text-sm hover:bg-primary-600 hover:text-white transition-colors cursor-pointer"
+                      >
+                        {tag}
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* License Information */}
+              {scene.license_url && (
+                <div className="card">
+                  <h3 className="font-semibold mb-3">License Information</h3>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-400">
+                        This content is licensed and verified for distribution.
+                      </p>
+                      {scene.license_verified && (
+                        <p className="text-sm text-green-400 mt-1">✓ License Verified</p>
+                      )}
+                    </div>
+                    <a
+                      href={scene.license_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-secondary text-sm"
+                    >
+                      View License
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Creator Info */}
-              <div className="card">
-                <h3 className="font-semibold mb-4">Creator</h3>
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-12 h-12 bg-dark-700 rounded-full flex items-center justify-center">
-                    <User className="w-6 h-6 text-gray-400" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2">
-                      <h4 className="font-medium">{scene.creator.name}</h4>
-                      {scene.creator.verified && (
-                        <div className="w-4 h-4 bg-primary-600 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs">✓</span>
-                        </div>
-                      )}
+              {scene.creator && (
+                <div className="card">
+                  <h3 className="font-semibold mb-4">Creator</h3>
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-12 h-12 bg-dark-700 rounded-full flex items-center justify-center">
+                      <User className="w-6 h-6 text-gray-400" />
                     </div>
-                    <p className="text-sm text-gray-400">{scene.creator.contentCount} videos</p>
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <h4 className="font-medium">{scene.creator.name}</h4>
+                        {scene.creator.is_verified && (
+                          <div className="w-4 h-4 bg-primary-600 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs">✓</span>
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-400">
+                        {scene.creator.content_count || 0} videos
+                      </p>
+                    </div>
                   </div>
+                  {scene.creator.bio && (
+                    <p className="text-sm text-gray-400 mb-4">{scene.creator.bio}</p>
+                  )}
+                  <Link href={`/creator/${scene.creator.id}`} className="btn-primary w-full">
+                    View Creator Profile
+                  </Link>
                 </div>
-                <button className="btn-primary w-full">Follow Creator</button>
-              </div>
+              )}
 
               {/* Scene Info */}
               <div className="card">
                 <h3 className="font-semibold mb-4">Scene Information</h3>
                 <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Published:</span>
-                    <span>{new Date(scene.createdAt).toLocaleDateString()}</span>
-                  </div>
+                  {scene.published_at && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Published:</span>
+                      <span>{new Date(scene.published_at).toLocaleDateString()}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-gray-400">Duration:</span>
-                    <span>{scene.duration}</span>
+                    <span>{formatDuration(scene.duration)}</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Rating:</span>
-                    <span>{scene.rating}/5</span>
-                  </div>
+                  {scene.rating && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Rating:</span>
+                      <span>{scene.rating.toFixed(1)}/5</span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-gray-400">Views:</span>
-                    <span>{scene.viewCount.toLocaleString()}</span>
+                    <span>{scene.view_count ? scene.view_count.toLocaleString() : 0}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Type:</span>
-                    <span>{scene.isPremium ? 'Premium' : 'Free'}</span>
+                    <span>{scene.is_premium ? 'Premium' : 'Free'}</span>
                   </div>
+                  {scene.age_rating && (
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Age Rating:</span>
+                      <span>{scene.age_rating}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -367,7 +556,14 @@ export default function ScenePage() {
                 'Other'
               ].map((reason) => (
                 <label key={reason} className="flex items-center space-x-3">
-                  <input type="radio" name="report-reason" className="text-primary-600" />
+                  <input 
+                    type="radio" 
+                    name="report-reason" 
+                    value={reason}
+                    checked={reportReason === reason}
+                    onChange={(e) => setReportReason(e.target.value)}
+                    className="text-primary-600" 
+                  />
                   <span>{reason}</span>
                 </label>
               ))}
@@ -375,22 +571,26 @@ export default function ScenePage() {
             <div className="mt-4">
               <textarea
                 placeholder="Additional details (optional)"
+                value={reportDetails}
+                onChange={(e) => setReportDetails(e.target.value)}
                 className="input-field w-full h-24 resize-none"
               />
             </div>
             <div className="flex space-x-3 mt-6">
               <button
-                onClick={() => setShowReportModal(false)}
+                onClick={() => {
+                  setShowReportModal(false);
+                  setReportReason('');
+                  setReportDetails('');
+                }}
                 className="btn-secondary flex-1"
               >
                 Cancel
               </button>
               <button
-                onClick={() => {
-                  setShowReportModal(false);
-                  // Handle report submission
-                }}
-                className="btn-danger flex-1"
+                onClick={submitReport}
+                disabled={!reportReason}
+                className="btn-danger flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Submit Report
               </button>

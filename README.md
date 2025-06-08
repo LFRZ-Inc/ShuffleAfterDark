@@ -1,238 +1,314 @@
-# ShuffleAfterDark - Smart Adult Content Shuffler
+# AfterDark - Smart Adult Content Shuffle Platform
 
-A sophisticated adult content platform with intelligent shuffling, built with Next.js, TypeScript, and Supabase.
+A premium adult content platform with intelligent shuffling, safe/NSFW toggle, and creator monetization features.
 
 ## 🌟 Features
 
-### Core Features
-- **Smart Shuffle Algorithm**: Intelligent content recommendation based on user preferences
-- **Safe Mode / XXX Mode Toggle**: Seamless switching between SFW and NSFW content
-- **Age Verification**: Robust 18+ verification system
-- **Incognito Mode**: Privacy-focused browsing with no tracking
-- **Responsive Design**: Optimized for desktop, tablet, and mobile
+### Core Functionality
+- **Smart Shuffle Engine**: AI-powered content recommendation system
+- **Safe/NSFW Mode Toggle**: Global content filtering with ShuffleXXX toggle
+- **Age Verification**: Secure 18+ age gate protection
+- **Creator Dashboard**: Content management for verified creators
+- **Premium Subscriptions**: CCBill integration for monetization
 
 ### Content Management
-- **Curated Content**: Ethically sourced from verified creators
-- **Advanced Filtering**: Search by mood, tags, duration, rating
-- **Creator Spotlight**: Featured content creators and studios
-- **Content Warnings**: Clear labeling and user preferences
+- **Multi-tier Content**: Free, Premium, and Premium+XXX tiers
+- **Creator Verification**: Verified creator badge system
+- **License Tracking**: Content licensing and verification
+- **Content Reporting**: DMCA-compliant reporting system
+- **Tag-based Filtering**: Advanced content categorization
 
 ### User Experience
-- **Dark Theme**: Elegant dark UI with neon accents
-- **Smooth Animations**: Framer Motion powered interactions
-- **Loading States**: Skeleton screens and loading indicators
-- **Error Handling**: Graceful error boundaries and fallbacks
+- **Responsive Design**: Mobile-first, dark theme UI
+- **Incognito Mode**: Private browsing with no history tracking
+- **Personalized Recommendations**: Based on viewing history and preferences
+- **Advanced Search**: Filter by tags, creators, duration, and rating
+- **Social Features**: Like, save, and share content
 
-## 🛠️ Tech Stack
+## 🛠 Tech Stack
 
-- **Frontend**: Next.js 14 (App Router), React 18, TypeScript
-- **Styling**: Tailwind CSS with custom design system
+- **Frontend**: Next.js 14, TypeScript, Tailwind CSS
 - **Backend**: Supabase (PostgreSQL, Auth, Storage)
-- **Payments**: Stripe integration for subscriptions
-- **Icons**: Lucide React
-- **Animations**: Framer Motion
-- **Forms**: React Hook Form with Zod validation
-- **State Management**: React Context + Cookies/LocalStorage
+- **Payment**: CCBill integration
+- **Deployment**: Vercel
+- **UI Components**: Lucide React icons
 
-## 🚀 Getting Started
+## 📋 Prerequisites
 
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-- Supabase account
-- Stripe account (for payments)
+- Node.js 18+ and npm
+- Supabase account and project
+- CCBill merchant account (for payments)
+- Vercel account (for deployment)
 
-### Installation
+## 🚀 Quick Start
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/shuffle-after-dark.git
-   cd shuffle-after-dark
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**
-   ```bash
-   cp env.example .env.local
-   ```
-   
-   Fill in your environment variables:
-   ```env
-   # Supabase
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-   
-   # Stripe
-   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_publishable_key
-   STRIPE_SECRET_KEY=your_stripe_secret_key
-   
-   # App Configuration
-   NEXTAUTH_URL=http://localhost:3000
-   NEXTAUTH_SECRET=your_random_secret
-   ```
-
-4. **Set up Supabase database**
-   
-   Run the SQL migrations in your Supabase dashboard:
-   ```sql
-   -- Create tables for users, scenes, creators, etc.
-   -- See database/schema.sql for complete schema
-   ```
-
-5. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-
-6. **Open your browser**
-   Navigate to `http://localhost:3000`
-
-## 📁 Project Structure
-
-```
-shuffle-after-dark/
-├── app/                    # Next.js 14 App Router
-│   ├── globals.css        # Global styles
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx           # Home page
-│   ├── shuffle/           # Shuffle page
-│   ├── browse/            # Browse content page
-│   └── ...
-├── components/            # Reusable UI components
-│   ├── AgeVerification.tsx
-│   ├── Header.tsx
-│   ├── Footer.tsx
-│   └── ...
-├── context/               # React Context providers
-│   └── AppContext.tsx     # Global app state
-├── lib/                   # Utilities and configurations
-│   └── supabase.ts        # Supabase client
-├── types/                 # TypeScript type definitions
-│   ├── database.ts        # Database types
-│   └── index.ts           # App types
-└── ...
-```
-
-## 🔐 Security & Privacy
-
-### Age Verification
-- Mandatory 18+ verification with date validation
-- Country-based compliance checking
-- Persistent verification with privacy options
-
-### Content Safety
-- Clear NSFW/SFW content separation
-- Content warnings and user preferences
-- Report system for inappropriate content
-
-### Privacy Features
-- Incognito mode for anonymous browsing
-- No tracking in private mode
-- GDPR compliant data handling
-- Secure session management
-
-## 🎨 Design System
-
-### Colors
-- **Primary**: Pink/Red gradient (#ff0080 to #ec4899)
-- **Dark**: Slate color palette (#0f172a to #64748b)
-- **Neon**: Accent colors for highlights
-
-### Typography
-- **Font**: Inter (Google Fonts)
-- **Hierarchy**: Consistent sizing and weights
-
-### Components
-- **Cards**: Rounded corners with subtle shadows
-- **Buttons**: Gradient primary, solid secondary
-- **Forms**: Dark theme with focus states
-
-## 🔄 Shuffle Algorithm
-
-The smart shuffle system considers:
-- User preferences and viewing history
-- Content ratings and popularity
-- Mood and tag preferences
-- Time-based patterns
-- Exclusion of recently viewed content
-
-## 📱 Responsive Design
-
-- **Mobile First**: Optimized for mobile devices
-- **Breakpoints**: sm (640px), md (768px), lg (1024px), xl (1280px)
-- **Touch Friendly**: Large tap targets and gestures
-- **Performance**: Optimized images and lazy loading
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-1. Connect your GitHub repository to Vercel
-2. Set environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
-
-### Other Platforms
-- **Netlify**: Full support with serverless functions
-- **Railway**: Database and app hosting
-- **DigitalOcean**: App Platform deployment
-
-## 🧪 Testing
+### 1. Clone and Install
 
 ```bash
-# Run type checking
-npm run type-check
-
-# Run linting
-npm run lint
-
-# Build for production
-npm run build
+git clone <repository-url>
+cd ShuffleAfterDark
+npm install
 ```
 
-## 📈 Performance
+### 2. Environment Setup
 
-- **Core Web Vitals**: Optimized for LCP, FID, CLS
-- **Image Optimization**: Next.js Image component
-- **Code Splitting**: Automatic route-based splitting
-- **Caching**: Aggressive caching strategies
+Create `.env.local` file:
+
+```env
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+
+# CCBill Configuration (Optional)
+NEXT_PUBLIC_CCBILL_URL=https://bill.ccbill.com/jpost/signup.cgi
+NEXT_PUBLIC_CCBILL_ACCOUNT=your_ccbill_account
+NEXT_PUBLIC_CCBILL_SUBACCOUNT=your_ccbill_subaccount
+
+# Optional Services
+NEXT_PUBLIC_CDN_URL=your_cdn_url
+NEXT_PUBLIC_ANALYTICS_ID=your_analytics_id
+```
+
+### 3. Database Setup
+
+1. Create a new Supabase project
+2. Run the database schema from `supabase/migrations/`
+3. Execute the seed data script: `scripts/seed-data.sql`
+4. Configure Row Level Security (RLS) policies
+
+### 4. Development
+
+```bash
+npm run dev
+```
+
+Visit `http://localhost:3000` to see the application.
+
+### 5. Production Deployment
+
+Deploy to Vercel:
+
+```bash
+npm run build
+vercel --prod
+```
+
+## 📊 Database Schema
+
+### Core Tables
+
+- **users**: User profiles and subscription data
+- **creators**: Content creator information
+- **scenes_nsfw**: Adult content metadata
+- **user_interactions**: User engagement tracking
+- **subscription_history**: Payment and subscription records
+- **content_reports**: DMCA and content reporting
+
+### Key Features
+
+- Row Level Security (RLS) enabled
+- UUID primary keys
+- JSON fields for flexible metadata
+- Audit trails with timestamps
+- Foreign key relationships
+
+## 🎯 User Roles
+
+### Regular User (`user`)
+- Browse and shuffle content
+- Save favorites and view history
+- Manage account preferences
+- Subscribe to premium tiers
+
+### Administrator (`admin`)
+- Access creator dashboard
+- Manage all content
+- Add new scenes and creators
+- Handle content reports
+- View platform analytics
+
+## 🔐 Security Features
+
+### Age Verification
+- Mandatory 18+ age gate
+- Persistent verification storage
+- Legal compliance measures
+
+### Content Protection
+- Safe Mode for SFW-only browsing
+- Content warnings and ratings
+- NSFW content filtering
+- Incognito mode support
+
+### Data Privacy
+- GDPR-compliant data handling
+- User data export/deletion
+- Encrypted data transmission
+- Secure payment processing
+
+## 💳 Payment Integration
+
+### CCBill Setup
+1. Create CCBill merchant account
+2. Configure payment forms for each subscription tier
+3. Set up webhook endpoints for subscription management
+4. Test payment flows in sandbox mode
+
+### Subscription Tiers
+- **Free**: Limited shuffles, SFW content only
+- **Premium AfterDark**: Unlimited shuffles, full SFW library, HD quality
+- **Premium+XXX**: Everything + full XXX library, 4K quality, downloads
+
+## 🎨 Customization
+
+### Branding
+- Update `lib/config.ts` for platform settings
+- Modify color scheme in `tailwind.config.js`
+- Replace logo and branding assets
+- Customize email templates
+
+### Content Categories
+- Add new tags in database
+- Update filtering logic in browse components
+- Modify shuffle algorithm preferences
+- Configure content warnings
+
+## 📱 API Endpoints
+
+### Public Routes
+- `/` - Home page with featured content
+- `/shuffle` - Smart shuffle interface
+- `/browse` - Content browsing and search
+- `/scene/[id]` - Individual scene pages
+
+### Protected Routes
+- `/account` - User account management
+- `/creator-dashboard` - Admin content management (admin only)
+
+### Legal Pages
+- `/terms` - Terms of Service
+- `/privacy` - Privacy Policy
+- `/dmca` - DMCA Policy
+
+## 🔧 Configuration
+
+### Feature Flags
+Enable/disable features in `lib/config.ts`:
+
+```typescript
+features: {
+  enableDownloads: true,
+  enableComments: false,
+  enableRatings: true,
+  enableReports: true,
+  enableSharing: true,
+  enableAnalytics: true,
+}
+```
+
+### Content Settings
+- Maximum shuffle history: 10 items
+- Default safe mode: enabled
+- File upload limits: 500MB
+- Supported formats: MP4, WebM, MOV
+
+## 🚨 Content Moderation
+
+### Automated Systems
+- Content scanning for compliance
+- Automatic NSFW detection
+- Duplicate content prevention
+- License verification
+
+### Manual Review
+- Creator verification process
+- Content quality standards
+- Community reporting system
+- DMCA takedown procedures
+
+## 📈 Analytics & Monitoring
+
+### User Metrics
+- View counts and engagement
+- Shuffle algorithm performance
+- User retention and conversion
+- Content popularity trends
+
+### Business Metrics
+- Subscription conversion rates
+- Revenue tracking
+- Creator performance
+- Platform growth metrics
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-## 📄 License
+### Code Standards
+- TypeScript strict mode
+- ESLint configuration
+- Prettier formatting
+- Component documentation
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 📄 Legal Compliance
 
-## ⚠️ Legal Notice
+### Age Verification
+- 18+ age gate implementation
+- Legal age verification storage
+- Jurisdiction-specific compliance
+- Audit trail maintenance
 
-This application is intended for adults 18 years or older. By using this software, you acknowledge that you are of legal age in your jurisdiction to view adult content.
+### Content Licensing
+- Creator license verification
+- DMCA compliance procedures
+- Content takedown processes
+- Rights management system
+
+### Privacy Compliance
+- GDPR data protection
+- CCPA compliance
+- User consent management
+- Data retention policies
 
 ## 🆘 Support
 
-- **Documentation**: Check the `/docs` folder
-- **Issues**: Report bugs on GitHub Issues
-- **Discussions**: Join GitHub Discussions for questions
+### Documentation
+- API documentation
+- Component library
+- Deployment guides
+- Troubleshooting guides
 
-## 🔮 Roadmap
+### Contact
+- Technical Support: `support@afterdark.com`
+- DMCA Notices: `dmca@afterdark.com`
+- Legal Inquiries: `legal@afterdark.com`
+- Privacy Concerns: `privacy@afterdark.com`
 
-- [ ] Creator dashboard and upload system
-- [ ] Advanced analytics and insights
-- [ ] Mobile app (React Native)
-- [ ] AI-powered content recommendations
-- [ ] Live streaming integration
-- [ ] Community features and social aspects
-- [ ] Multi-language support
-- [ ] Advanced payment options
+## 📝 License
+
+This project is proprietary software. All rights reserved.
+
+## 🔄 Version History
+
+### v1.0.0 (Current)
+- Initial platform launch
+- Core shuffle functionality
+- Creator dashboard
+- CCBill payment integration
+- Mobile-responsive design
+
+### Planned Features
+- Advanced analytics dashboard
+- Creator revenue sharing
+- Live streaming integration
+- Mobile app development
+- AI-powered content tagging
 
 ---
 
-**Built with ❤️ for the adult content creator community** 
+**⚠️ Important**: This platform is intended for adults 18+ only. Ensure compliance with local laws and regulations regarding adult content distribution. 

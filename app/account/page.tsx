@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { generateCCBillUrl } from '@/lib/config';
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -425,13 +426,46 @@ export default function AccountPage() {
                   <li key={index}>• {feature}</li>
                 ))}
               </ul>
-              {profile.subscription.tier !== tier.id && (
-                <button className="btn-primary w-full">
-                  {tier.id === 'free' ? 'Downgrade' : 'Upgrade'}
+              {profile.subscription.tier !== tier.id && tier.id !== 'free' && (
+                <a
+                  href={generateCCBillUrl(tier.id === 'premium' ? 'premium' : 'premium_xxx')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary w-full inline-block text-center"
+                >
+                  Upgrade via CCBill
+                </a>
+              )}
+              {profile.subscription.tier !== tier.id && tier.id === 'free' && (
+                <button 
+                  onClick={() => alert('Contact support to downgrade your account')}
+                  className="btn-secondary w-full"
+                >
+                  Contact Support
                 </button>
               )}
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Payment Information */}
+      <div className="card">
+        <h3 className="text-xl font-semibold mb-4">Payment Information</h3>
+        <div className="bg-blue-600/10 border border-blue-600/20 rounded-lg p-4">
+          <div className="flex items-center space-x-3 mb-3">
+            <CreditCard className="w-6 h-6 text-blue-400" />
+            <h4 className="font-semibold text-blue-400">Secure Payment Processing</h4>
+          </div>
+          <p className="text-sm text-gray-300 mb-3">
+            All payments are processed securely through CCBill, a trusted payment processor for adult content platforms.
+          </p>
+          <ul className="text-sm text-gray-400 space-y-1">
+            <li>• SSL encrypted transactions</li>
+            <li>• Discreet billing</li>
+            <li>• 24/7 customer support</li>
+            <li>• Cancel anytime</li>
+          </ul>
         </div>
       </div>
     </div>
