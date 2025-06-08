@@ -160,6 +160,8 @@ export default function QuickTestPage() {
           <div className="space-x-4">
             <a href="/debug" className="text-primary-400 hover:text-primary-300">Debug Page</a>
             <a href="/auth-test" className="text-primary-400 hover:text-primary-300">Auth Test</a>
+            <a href="/auth-debug" className="text-primary-400 hover:text-primary-300">Auth Debug</a>
+            <a href="/browse-debug" className="text-primary-400 hover:text-primary-300">Browse Debug</a>
             <a href="/test-image" className="text-primary-400 hover:text-primary-300">Image Test</a>
             <a href="/browse" className="text-primary-400 hover:text-primary-300">Browse</a>
             <a href="/signup" className="text-primary-400 hover:text-primary-300">Signup</a>
