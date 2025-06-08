@@ -152,6 +152,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const loadLocalPreferences = () => {
+    // Only access localStorage in the browser
+    if (typeof window === 'undefined') return;
+    
     try {
       const savedAgeVerified = localStorage.getItem('ageVerified');
       const savedXXXMode = localStorage.getItem('xxxMode');
@@ -175,15 +178,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const handleSetAgeVerified = (verified: boolean) => {
     setAgeVerified(verified);
-    try {
-      localStorage.setItem('ageVerified', verified.toString());
-      
-      // Update user profile if logged in
-      if (user && userProfile) {
-        updateUserProfile({ age_verified: verified });
+    
+    // Only access localStorage in the browser
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('ageVerified', verified.toString());
+      } catch (error) {
+        console.error('Error saving age verification:', error);
       }
-    } catch (error) {
-      console.error('Error saving age verification:', error);
+    }
+    
+    // Update user profile if logged in
+    if (user && userProfile) {
+      updateUserProfile({ age_verified: verified });
     }
   };
 
@@ -191,10 +198,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const newMode = !isXXXEnabled;
     setIsXXXEnabled(newMode);
     
-    try {
-      localStorage.setItem('xxxMode', newMode.toString());
-    } catch (error) {
-      console.error('Error saving XXX mode:', error);
+    // Only access localStorage in the browser
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('xxxMode', newMode.toString());
+      } catch (error) {
+        console.error('Error saving XXX mode:', error);
+      }
     }
   };
 
@@ -202,10 +212,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const newMode = !incognitoMode;
     setIncognitoMode(newMode);
     
-    try {
-      localStorage.setItem('incognitoMode', newMode.toString());
-    } catch (error) {
-      console.error('Error saving incognito mode:', error);
+    // Only access localStorage in the browser
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('incognitoMode', newMode.toString());
+      } catch (error) {
+        console.error('Error saving incognito mode:', error);
+      }
     }
   };
 
