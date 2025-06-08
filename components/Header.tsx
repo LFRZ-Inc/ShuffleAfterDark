@@ -6,7 +6,7 @@ import { useApp } from '@/context/AppContext';
 import { Menu, X, User, Settings, LogOut, Shield, Eye, EyeOff } from 'lucide-react';
 
 export default function Header() {
-  const { isXXXEnabled, toggleXXXMode, user, ageVerified, incognitoMode, toggleIncognitoMode } = useApp();
+  const { isXXXEnabled, safeMode, toggleXXXMode, user, ageVerified, incognitoMode, toggleIncognitoMode } = useApp();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
@@ -24,10 +24,10 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-neon-gradient rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">S</span>
+              <span className="text-white font-bold text-sm">A</span>
             </div>
             <span className="text-xl font-bold">
-              Shuffle<span className="text-primary-400">AfterDark</span>
+              After<span className="text-primary-400">Dark</span>
             </span>
           </Link>
 
@@ -46,15 +46,18 @@ export default function Header() {
 
           {/* Controls */}
           <div className="flex items-center space-x-4">
-            {/* XXX Mode Toggle */}
+            {/* Safe Mode / Full Experience Toggle */}
             {ageVerified && (
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-400">Safe</span>
+              <div className="flex items-center space-x-3">
+                <span className={`text-sm ${safeMode ? 'text-green-400' : 'text-gray-400'}`}>
+                  Safe Mode
+                </span>
                 <button
                   onClick={toggleXXXMode}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                     isXXXEnabled ? 'bg-primary-600' : 'bg-gray-600'
                   }`}
+                  title={safeMode ? 'Enable Full Experience (18+)' : 'Enable Safe Mode'}
                 >
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -62,7 +65,9 @@ export default function Header() {
                     }`}
                   />
                 </button>
-                <span className="text-sm text-primary-400">XXX</span>
+                <span className={`text-sm ${!safeMode ? 'text-primary-400' : 'text-gray-400'}`}>
+                  Full Experience (18+)
+                </span>
               </div>
             )}
 

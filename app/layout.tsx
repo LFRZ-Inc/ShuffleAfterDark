@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ['latin'] });
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'ShuffleAfterDark - Smart Adult Content Shuffler',
+  title: 'AfterDark - Smart Adult Content Platform',
   description: 'Discover curated adult content with intelligent shuffling. Safe mode and premium features available.',
   keywords: 'adult content, shuffle, premium, safe mode, curated',
   robots: 'noindex, nofollow', // Important for adult content

@@ -39,7 +39,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold mb-4">1. Acceptance of Terms</h2>
               <p className="text-gray-300 leading-relaxed">
-                By accessing and using ShuffleAfterDark ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
+                By accessing and using AfterDark ("the Service"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.
               </p>
             </section>
 
@@ -109,7 +109,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold mb-4">7. Intellectual Property</h2>
               <div className="space-y-4 text-gray-300">
-                <p>The Service and its original content, features, and functionality are and will remain the exclusive property of ShuffleAfterDark and its licensors.</p>
+                <p>The Service and its original content, features, and functionality are and will remain the exclusive property of AfterDark and its licensors.</p>
                 <p>Content creators retain rights to their original content while granting us necessary licenses to operate the Service.</p>
                 <p>You may not reproduce, distribute, or create derivative works without explicit permission.</p>
               </div>
@@ -129,7 +129,7 @@ export default function TermsPage() {
               <div className="space-y-4 text-gray-300">
                 <p>The Service is provided "as is" without warranties of any kind, either express or implied.</p>
                 <p>We do not warrant that the Service will be uninterrupted, secure, or error-free.</p>
-                <p>In no event shall ShuffleAfterDark be liable for any indirect, incidental, special, consequential, or punitive damages.</p>
+                <p>In no event shall AfterDark be liable for any indirect, incidental, special, consequential, or punitive damages.</p>
               </div>
             </section>
 
@@ -164,7 +164,7 @@ export default function TermsPage() {
               <div className="space-y-4 text-gray-300">
                 <p>If you have any questions about these Terms, please contact us at:</p>
                 <div className="bg-dark-700 p-4 rounded-lg">
-                  <p>Email: legal@shuffleafterdark.com</p>
+                  <p>Email: legal@afterdark.com</p>
                   <p>Address: [Company Address]</p>
                   <p>Phone: [Contact Number]</p>
                 </div>

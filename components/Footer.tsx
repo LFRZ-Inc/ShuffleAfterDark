@@ -100,8 +100,8 @@ export default function Footer() {
               This website contains adult content and is intended for adults 18 years or older.
               By accessing this site, you confirm that you are of legal age in your jurisdiction.
             </p>
-            <p className="text-xs text-gray-500">
-              © 2024 ShuffleAfterDark. All rights reserved. Content is provided by verified creators and licensed partners.
+            <p className="text-sm text-gray-400">
+              © 2024 AfterDark. All rights reserved. Content is provided by verified creators and licensed partners.
             </p>
           </div>
         </div>

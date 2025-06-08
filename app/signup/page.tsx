@@ -142,7 +142,7 @@ export default function SignupPage() {
           <div className="card">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold mb-2 bg-neon-gradient bg-clip-text text-transparent">
-                Join ShuffleAfterDark
+                Join AfterDark
               </h1>
               <p className="text-gray-400">
                 Create your account to start exploring
