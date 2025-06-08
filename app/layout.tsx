@@ -6,6 +6,9 @@ import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ['latin'] });
 
+// Force dynamic rendering for all pages to prevent build-time errors
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'ShuffleAfterDark - Smart Adult Content Shuffler',
   description: 'Discover curated adult content with intelligent shuffling. Safe mode and premium features available.',
