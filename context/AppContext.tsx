@@ -43,6 +43,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [incognitoMode, setIncognitoMode] = useState(false);
 
   useEffect(() => {
+    // Skip initialization during build time
+    if (typeof window === 'undefined') {
+      setIsLoading(false);
+      return;
+    }
+
     // Check initial session
     checkUser();
 
@@ -68,6 +74,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const checkUser = async () => {
     try {
+      // Skip user check during build time
+      if (typeof window === 'undefined') {
+        setIsLoading(false);
+        return;
+      }
+      
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setUser(user);
